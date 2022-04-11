@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PingController = void 0;
 const index_1 = require("./../constants/index");
 class PingController {
-    static ping(req, response) {
+    static ping(req, response, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let error;
@@ -21,11 +21,9 @@ class PingController {
                 let res;
                 if (statusCode !== 200) {
                     error = new Error(index_1.applicationError.unsuccessfulRequest(statusCode));
-                    return error;
+                    return res.status(statusCode).json(error);
                 }
-                else {
-                    res = response.status(200).json(apiResponse);
-                }
+                res = response.status(200).json(apiResponse);
                 return res;
             }
             catch (error) { }

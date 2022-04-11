@@ -23,6 +23,25 @@
                 "externalConsole": false,
                 "sourceMaps": false,
                 "outDir": null
+            },
+            {
+                "type": "node",
+                "request": "launch",
+                "name": "Test",
+                "program": "/Users/ola/Documents/Apps/ramani-assessmant/dist/index.js",
+                "args": [
+                    "--reporter",
+                    "spec",
+                    "--require",
+                    "ts-node/register",
+                    "/Users/ola/Documents/Apps/ramani-assessmant/src/controllers/post-controller.ts",
+                    "--exit",
+                ],
+                "runtimeArgs": [],
+                "sourceMaps": true,
+                "cwd": "${workspaceRoot}",
+                "protocol": "inspector",
+                "configurations": [],
             }
     ]
 }

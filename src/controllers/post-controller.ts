@@ -3,7 +3,6 @@ import { applicationError } from "./../constants/index";
 import express from "express";
 import { Request, Response } from "express";
 import axios from "axios";
-import { constructCacheId, cache } from "./../middlewares";
 
 const got = require("got");
 export class PostController {
@@ -38,7 +37,6 @@ export class PostController {
       }
 
       if (sortByOption.query.sortBy && sortByOption.query.direction) {
-        const cacheId = constructCacheId(req);
         const queryResults = await PostController.getPostsData(
           tagsArr,
           sortByOption.query.sortBy,
@@ -55,7 +53,6 @@ export class PostController {
             allPosts
           );
         }
-        cache.set(cacheId, allPosts);
       }
       return response.status(200).json(allPosts);
     } catch (error) {

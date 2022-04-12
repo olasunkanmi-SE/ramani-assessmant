@@ -4,6 +4,7 @@ import { PostController } from ".././controllers/post-controller";
 describe("post controller", () => {
   let responseObject = {};
   let mockNext: NextFunction = jest.fn();
+
   test("Should return filtered posts", async () => {
     const request = {
       query: {

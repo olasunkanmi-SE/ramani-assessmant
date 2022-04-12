@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostController = void 0;
 const index_1 = require("./../constants/index");
 const axios_1 = __importDefault(require("axios"));
-const middlewares_1 = require("./../middlewares");
 const got = require("got");
 class PostController {
     static getPosts(req, response, next) {
@@ -42,7 +41,6 @@ class PostController {
                     return response.status(400).json({ error: error.message });
                 }
                 if (sortByOption.query.sortBy && sortByOption.query.direction) {
-                    const cacheId = (0, middlewares_1.constructCacheId)(req);
                     const queryResults = yield PostController.getPostsData(tagsArr, sortByOption.query.sortBy, sortByOption.query.direction);
                     if (queryResults && queryResults.length) {
                         for (let i = 0; i < queryResults.length; i++) {
@@ -51,12 +49,11 @@ class PostController {
                         allPosts = PostController.combinePosts(posts);
                         allPosts = PostController.sortPosts(sortByOption.query.sortBy.toString(), sortByOption.query.direction.toString(), allPosts);
                     }
-                    middlewares_1.cache.set(cacheId, allPosts);
                 }
                 return response.status(200).json(allPosts);
             }
             catch (error) {
-                return response.status(400);
+                return response.status(400).json({ error });
             }
         });
     }

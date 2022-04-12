@@ -1,8 +1,9 @@
+import { IPost } from "./../interfaces/index";
 import { NextFunction, Request, Response } from "express";
 import { PostController } from ".././controllers/post-controller";
 
 describe("post controller", () => {
-  let responseObject = {};
+  let responseObject: { error: string; posts: IPost[] };
   let mockNext: NextFunction = jest.fn();
 
   test("Should return filtered posts", async () => {
@@ -25,7 +26,7 @@ describe("post controller", () => {
     } as any as Response;
 
     await PostController.getPosts(request, response, mockNext);
-    expect(responseObject).toHaveLength;
+    expect(responseObject.posts).toHaveLength;
   });
 
   test("Should throw tags parameter error", async () => {
@@ -47,6 +48,6 @@ describe("post controller", () => {
     } as any as Response;
 
     await PostController.getPosts(request, response, mockNext);
-    expect(responseObject).toEqual({ error: "Tags parameter is required" });
+    expect(responseObject.error).toBe("Tags parameter is required");
   });
 });

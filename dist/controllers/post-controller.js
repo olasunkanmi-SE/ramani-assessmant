@@ -41,16 +41,16 @@ class PostController {
                     return response.status(400).json({ error: error.message });
                 }
                 if (sortByOption.query.sortBy && sortByOption.query.direction) {
-                    const queryResults = yield PostController.getPostsData(tagsArr, sortByOption.query.sortBy, sortByOption.query.direction);
+                    const queryResults = yield PostController.getPostsData(tagsArr);
                     if (queryResults && queryResults.length) {
                         for (let i = 0; i < queryResults.length; i++) {
                             posts.push(queryResults[i].data.posts);
                         }
-                        allPosts = PostController.combinePosts(posts);
+                        allPosts = PostController.combinePostsAndRemoveDuplicates(posts);
                         allPosts = PostController.sortPosts(sortByOption.query.sortBy.toString(), sortByOption.query.direction.toString(), allPosts);
                     }
                 }
-                return response.status(200).json(allPosts);
+                return response.status(200).json({ posts: allPosts });
             }
             catch (error) {
                 return response.status(400).json({ error });
@@ -68,26 +68,19 @@ class PostController {
         }
         return request;
     }
-    static getPostsData(tags, sortBy, direction) {
+    static getPostsData(tags) {
         return __awaiter(this, void 0, void 0, function* () {
-            let promises = [];
-            for (let i = 0; i < tags.length; i++) {
-                promises.push(axios_1.default.get("https://api.hatchways.io/assessment/blog/posts", {
-                    params: {
-                        tag: tags[i],
-                        sortBy,
-                        direction,
-                    },
-                }));
+            try {
+                const requests = tags.map((tag) => axios_1.default.get(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`));
+                const result = yield Promise.all(requests);
+                return result;
             }
-            return Promise.all(promises)
-                .then((queryResults) => {
-                return queryResults;
-            })
-                .catch((error) => console.log(error));
+            catch (error) {
+                throw new Error(error);
+            }
         });
     }
-    static combinePosts(posts) {
+    static combinePostsAndRemoveDuplicates(posts) {
         const mergedPosts = [].concat.apply([], posts);
         const filteredPosts = [];
         const foundId = {};

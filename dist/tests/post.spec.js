@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const post_controller_1 = require(".././controllers/post-controller");
 describe("post controller", () => {
-    let responseObject = {};
+    let responseObject;
     let mockNext = jest.fn();
     test("Should return filtered posts", () => __awaiter(void 0, void 0, void 0, function* () {
         const request = {
@@ -31,7 +31,7 @@ describe("post controller", () => {
             },
         };
         yield post_controller_1.PostController.getPosts(request, response, mockNext);
-        expect(responseObject).toHaveLength;
+        expect(responseObject.posts).toHaveLength;
     }));
     test("Should throw tags parameter error", () => __awaiter(void 0, void 0, void 0, function* () {
         const request = {
@@ -50,7 +50,7 @@ describe("post controller", () => {
             },
         };
         yield post_controller_1.PostController.getPosts(request, response, mockNext);
-        expect(responseObject).toEqual({ error: "Tags parameter is required" });
+        expect(responseObject.error).toBe("Tags parameter is required");
     }));
 });
 //# sourceMappingURL=post.spec.js.map

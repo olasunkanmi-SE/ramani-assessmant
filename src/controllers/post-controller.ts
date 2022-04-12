@@ -1,10 +1,9 @@
 import { IPost } from "./../interfaces/index";
-import { IGetPostsRequest, ISortByRequest } from "../interfaces/index";
-import { apiQueryParams } from "./../constants/validation";
 import { applicationError } from "./../constants/index";
 import express from "express";
 import { Request, Response } from "express";
 import axios from "axios";
+import { constructCacheId, cache } from "./../middlewares";
 
 const got = require("got");
 export class PostController {
@@ -14,8 +13,7 @@ export class PostController {
     next: express.NextFunction
   ): Promise<IPost[] | Response<any, Record<string, any>>> {
     try {
-      let error: any;
-      let sort: any = {};
+      let error: Error;
       let posts: IPost[][] = [];
       let allPosts: IPost[];
 
@@ -40,6 +38,7 @@ export class PostController {
       }
 
       if (sortByOption.query.sortBy && sortByOption.query.direction) {
+        const cacheId = constructCacheId(req);
         const queryResults = await PostController.getPostsData(
           tagsArr,
           sortByOption.query.sortBy,
@@ -56,6 +55,7 @@ export class PostController {
             allPosts
           );
         }
+        cache.set(cacheId, allPosts);
       }
       return response.status(200).json(allPosts);
     } catch (error) {
@@ -83,7 +83,6 @@ export class PostController {
     direction: any
   ): Promise<any[] | void> {
     let promises: any[] = [];
-    let results: any[] = [];
     for (let i = 0; i < tags.length; i++) {
       promises.push(
         axios.get("https://api.hatchways.io/assessment/blog/posts", {

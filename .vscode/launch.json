@@ -42,6 +42,25 @@
                 "cwd": "${workspaceRoot}",
                 "protocol": "inspector",
                 "configurations": [],
+            },
+            {
+                "type": "node",
+                "request": "launch",
+                "name": "Unit Test",
+                "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+                "args": [
+                    "--reporter",
+                    "spec",
+                    "--require",
+                    "ts-node/register",
+                    "/Users/ola/Documents/Apps/ramani-assessmant/src/tests/post.spec.ts",
+                    "--exit",
+                ],
+                "runtimeArgs": [],
+                "sourceMaps": true,
+                "cwd": "${workspaceRoot}",
+                "protocol": "inspector",
+                "configurations": [],
             }
     ]
 }

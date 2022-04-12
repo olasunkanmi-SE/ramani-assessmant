@@ -56,7 +56,7 @@ class PostController {
                 return response.status(200).json(allPosts);
             }
             catch (error) {
-                return response.status(400);
+                return response.status(400).json({ error });
             }
         });
     }

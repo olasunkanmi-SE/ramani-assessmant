@@ -8,33 +8,15 @@ const got = require("got");
 export class PostController {
   static async getPosts(
     req: Request,
-    response: Response,
+    res: Response,
     next: express.NextFunction
-  ): Promise<IPost[] | Response<any, Record<string, any>>> {
+  ): Promise<Response<any, Record<string, any>>> {
     try {
-      let error: Error;
       let posts: IPost[][] = [];
       let allPosts: IPost[];
-
-      if (!req.query.tags) {
-        error = new Error(applicationError.tagParameterMissing);
-        return response.status(400).json({ error: error.message });
-      }
+      const sortByOption = PostController.postQueryValidation(req, res);
       const tags: any = req.query.tags;
       const tagsArr: string[] = tags.split(",");
-      const sortArr = ["likes", "popularity", "reads"];
-      const directionArr = ["desc", "asc"];
-      const sortByOption = PostController.getSortByOptions(req);
-
-      if (!sortArr.includes(sortByOption.query.sortBy.toString())) {
-        error = new Error(applicationError.invalidSortBy);
-        return response.status(400).json({ error: error.message });
-      }
-
-      if (!directionArr.includes(sortByOption.query.direction.toString())) {
-        error = new Error(applicationError.invalidDirection);
-        return response.status(400).json({ error: error.message });
-      }
 
       if (sortByOption.query.sortBy && sortByOption.query.direction) {
         const queryResults = await PostController.getPostsData(tagsArr);
@@ -50,21 +32,43 @@ export class PostController {
           );
         }
       }
-      return response.status(200).json({ posts: allPosts });
+      next();
+      return res.status(200).json({ posts: allPosts });
     } catch (error) {
-      return response.status(400).json({ error });
+      throw new Error(error);
     }
   }
 
-  static getSortByOptions(request: Request): Request {
-    let sortByOptions = ["reads", "likes", "popularity"];
-    if (!sortByOptions.includes(request.query.sortBy.toString())) {
-      request.query.sortBy = "id";
+  static postQueryValidation(request: Request, response: Response): any {
+    let error: Error;
+    try {
+      const tags: any = request.query.tags;
+      if (!tags) {
+        error = new Error(applicationError.tagParameterMissing);
+        return response.status(400).json({ error: error.message });
+      }
+      if (!request.query.sortBy) {
+        request.query.sortBy = "id";
+      }
+      if (!request.query.direction || request.query.direction !== "desc") {
+        request.query.direction = "asc";
+      }
+      const sortArr = ["likes", "popularity", "reads", "id"];
+      const directionArr = ["desc", "asc"];
+
+      if (!sortArr.includes(request.query.sortBy.toString())) {
+        error = new Error(applicationError.invalidSortBy);
+        return response.status(400).json({ error: error.message });
+      }
+
+      if (!directionArr.includes(request.query.direction.toString())) {
+        error = new Error(applicationError.invalidDirection);
+        return response.status(400).json({ error: error.message });
+      }
+      return request;
+    } catch (error) {
+      throw new Error(error);
     }
-    if (!request.query.direction || request.query.direction !== "desc") {
-      request.query.direction = "asc";
-    }
-    return request;
   }
 
   static async getPostsData(tags: string[]): Promise<any[]> {

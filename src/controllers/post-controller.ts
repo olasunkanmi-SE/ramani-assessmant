@@ -102,7 +102,7 @@ export class PostController {
     direction: string,
     posts: IPost[]
   ): IPost[] {
-    if (direction === "desc") {
+    if (direction) {
       switch (sortType) {
         case "likes":
           posts.sort((a: IPost, b: IPost) => (a.likes < b.likes ? 1 : -1));
@@ -117,23 +117,6 @@ export class PostController {
           break;
         default:
           posts.sort((a: IPost, b: IPost) => (a.id < b.id ? 1 : -1));
-          break;
-      }
-    } else {
-      switch (sortType) {
-        case "likes":
-          posts.sort((a: IPost, b: IPost) => (a.likes > b.likes ? 1 : -1));
-          break;
-        case "reads":
-          posts.sort((a: IPost, b: IPost) => (a.reads > b.reads ? 1 : -1));
-          break;
-        case "popularity":
-          posts.sort((a: IPost, b: IPost) =>
-            a.popularity > b.popularity ? 1 : -1
-          );
-          break;
-        default:
-          posts.sort((a: IPost, b: IPost) => (a.id > b.id ? 1 : -1));
           break;
       }
     }
